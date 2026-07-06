@@ -1,0 +1,133 @@
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.Queue;
+
+enum TipoSenha {
+    NORMAL,
+    PRIORITARIA
+}
+
+class Senha {
+
+    private final String codigo;
+    private final TipoSenha tipo;
+    private final LocalDateTime horarioEmissao;
+
+    public Senha(String codigo, TipoSenha tipo) {
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.horarioEmissao = LocalDateTime.now();
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public TipoSenha getTipo() {
+        return tipo;
+    }
+
+    public LocalDateTime getHorarioEmissao() {
+        return horarioEmissao;
+    }
+
+    @Override
+    public String toString() {
+        return codigo;
+    }
+}
+
+public class SistemaSenhas {
+
+    // Contador das senhas normais
+    private char letraNormal = 'A';
+    private int contadorNormal = 1;
+
+    // Contador das senhas prioritárias
+    private int contadorPrioritaria = 1;
+
+    private final Queue<Senha> filaNormal = new LinkedList<>();
+    private final Queue<Senha> filaPrioritaria = new LinkedList<>();
+
+    // Gera senha normal
+    public Senha gerarSenhaNormal() {
+
+        if (contadorNormal > 999) {
+            contadorNormal = 1;
+            letraNormal++;
+
+            if (letraNormal > 'Z') {
+                letraNormal = 'A';
+            }
+        }
+
+        String codigo = String.format("%c%03d", letraNormal, contadorNormal++);
+
+        Senha senha = new Senha(codigo, TipoSenha.NORMAL);
+
+        filaNormal.offer(senha);
+
+        return senha;
+    }
+
+    // Gera senha prioritária
+    public Senha gerarSenhaPrioritaria() {
+
+        if (contadorPrioritaria > 999) {
+            contadorPrioritaria = 1;
+        }
+
+        String codigo = String.format("P%03d", contadorPrioritaria++);
+
+        Senha senha = new Senha(codigo, TipoSenha.PRIORITARIA);
+
+        filaPrioritaria.offer(senha);
+
+        return senha;
+    }
+
+    // Chama a próxima senha
+    public Senha chamarProximaSenha() {
+
+        if (!filaPrioritaria.isEmpty()) {
+            return filaPrioritaria.poll();
+        }
+
+        if (!filaNormal.isEmpty()) {
+            return filaNormal.poll();
+        }
+
+        return null;
+    }
+
+    public static void main(String[] args) {
+
+        SistemaSenhas sistema = new SistemaSenhas();
+
+        System.out.println("=== Gerando Senhas ===");
+
+        System.out.println(sistema.gerarSenhaNormal());
+        System.out.println(sistema.gerarSenhaNormal());
+        System.out.println(sistema.gerarSenhaNormal());
+
+        System.out.println(sistema.gerarSenhaPrioritaria());
+        System.out.println(sistema.gerarSenhaPrioritaria());
+
+        System.out.println("\n=== Chamando Senhas ===");
+
+        Senha senha;
+
+        while ((senha = sistema.chamarProximaSenha()) != null) {
+
+            System.out.println(
+                    "Chamando: "
+                    + senha.getCodigo()
+                    + " ("
+                    + senha.getTipo()
+                    + ")"
+            );
+        }
+
+        System.out.println("\nNenhuma senha aguardando atendimento.");
+    }
+}
