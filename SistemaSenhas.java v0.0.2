@@ -1,0 +1,81 @@
+import java.util.Optional;
+
+public class SistemaSenhas {
+    private final GeradorSenha gerador = new GeradorSenha();
+    private final FilaAtendimento filaAtendimento = new FilaAtendimento();
+
+    public Senha emitirSenha(TipoSenha tipo) {
+        Senha senha = gerador.gerar(tipo);
+        filaAtendimento.enfileirar(senha);
+        return senha;
+    }
+
+    public Senha emitirNormal() {
+        return emitirSenha(TipoSenha.NORMAL);
+    }
+
+    public Senha emitirPrioritaria() {
+        return emitirSenha(TipoSenha.PRIORITARIA);
+    }
+
+    public Senha emitirPreferencial() {
+        return emitirSenha(TipoSenha.PREFERENCIAL);
+    }
+
+    public Senha emitirPediatria() {
+        return emitirSenha(TipoSenha.PEDIATRIA);
+    }
+
+    public Senha emitirEmergencia() {
+        return emitirSenha(TipoSenha.EMERGENCIA);
+    }
+
+    public Optional<Senha> chamarProximaSenha(String salaAtendimento) {
+        Optional<Senha> proxima = filaAtendimento.chamarProxima();
+
+        proxima.ifPresent(senha -> senha.marcarComoChamada(salaAtendimento));
+
+        return proxima;
+    }
+
+    public int totalEmEspera() {
+        return filaAtendimento.quantidadeTotalEmEspera();
+    }
+
+    public static void main(String[] args) {
+        SistemaSenhas sistema = new SistemaSenhas();
+
+        System.out.println("=== Emissão de senhas ===");
+        System.out.println(sistema.emitirNormal());
+        System.out.println(sistema.emitirNormal());
+        System.out.println(sistema.emitirPreferencial());
+        System.out.println(sistema.emitirPrioritaria());
+        System.out.println(sistema.emitirPediatria());
+        System.out.println(sistema.emitirEmergencia());
+        System.out.println(sistema.emitirNormal());
+        System.out.println(sistema.emitirPrioritaria());
+        System.out.println(sistema.emitirPreferencial());
+
+        System.out.println();
+        System.out.println("=== Chamando senhas ===");
+
+        while (sistema.totalEmEspera() > 0) {
+            Optional<Senha> chamada = sistema.chamarProximaSenha("Sala 03");
+
+            if (chamada.isPresent()) {
+                Senha senha = chamada.get();
+                System.out.println(
+                        "Chamando: " +
+                        senha.getCodigo() +
+                        " | Tipo: " +
+                        senha.getTipo().getDescricao() +
+                        " | Sala: " +
+                        senha.getSalaAtendimento()
+                );
+            }
+        }
+
+        System.out.println();
+        System.out.println("Nenhuma senha aguardando atendimento.");
+    }
+}
