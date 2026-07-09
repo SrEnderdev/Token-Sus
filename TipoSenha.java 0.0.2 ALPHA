@@ -1,0 +1,35 @@
+public enum TipoSenha {
+    EMERGENCIA("E", "Emergência", true, 0),
+    PRIORITARIA("P", "Prioritária", false, 3),
+    PREFERENCIAL("F", "Preferencial", false, 2),
+    PEDIATRIA("D", "Pediatria", false, 2),
+    NORMAL("A", "Normal", false, 1);
+
+    private final char letraInicial;
+    private final String descricao;
+    private final boolean prioridadeAbsoluta;
+    private final int pesoAtendimento;
+
+    TipoSenha(String letraInicial, String descricao, boolean prioridadeAbsoluta, int pesoAtendimento) {
+        this.letraInicial = letraInicial.charAt(0);
+        this.descricao = descricao;
+        this.prioridadeAbsoluta = prioridadeAbsoluta;
+        this.pesoAtendimento = pesoAtendimento;
+    }
+
+    public char getLetraInicial() {
+        return letraInicial;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public boolean isPrioridadeAbsoluta() {
+        return prioridadeAbsoluta;
+    }
+
+    public int getPesoAtendimento() {
+        return pesoAtendimento;
+    }
+}
